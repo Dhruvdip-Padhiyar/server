@@ -1,19 +1,22 @@
 const asyncHandler = require("express-async-handler");
+const goalService = require("../services/goal.service");
 
 //@desc    get goals
 //@route   GET /api/goals
 //@access  Private
 const getGoals = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "Get goals" });
+  const goals = await goalService.getGoals();
+  res.status(200).json(goals);
 });
 
 //@desc    set goals
 //@route   POST /api/goals/create
 //@access  Private
-const setGoals = asyncHandler(async (req, res) => {
-  const goal = req.body.text;
+const createGoals = asyncHandler(async (req, res) => {
+  const goalBody = req.body;
+  const goal = await goalService.createGoal(goalBody);
 
-  if (!goal) {
+  if (!goalBody) {
     res.status(400);
     throw new Error("Goal is required");
   }
@@ -25,7 +28,12 @@ const setGoals = asyncHandler(async (req, res) => {
 //@access  Private
 const updateGoal = asyncHandler(async (req, res) => {
   const goalId = req.params.id;
-  res.status(200).json({ message: "Update goal" });
+  const goal = await goalService.updateGoal(goalId, req.body);
+  if (!goal) {
+    res.status(400);
+    throw new Error("Goal not found");
+  }
+  res.status(200).json(goal);
 });
 
 //@desc    delete goal
@@ -33,7 +41,8 @@ const updateGoal = asyncHandler(async (req, res) => {
 //@access  Private
 const deleteGoal = asyncHandler(async (req, res) => {
   const goalId = req.params.id;
-  res.status(200).json({ message: "Delete goal" });
+  const goal = await goalService.deleteGoal(goalId);
+  res.status(200).json(goal);
 });
 
-module.exports = { getGoals, setGoals, updateGoal, deleteGoal };
+module.exports = { getGoals, createGoals, updateGoal, deleteGoal };
