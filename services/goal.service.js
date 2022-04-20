@@ -5,8 +5,8 @@ const createGoal = async (goalBody) => {
   return goal;
 };
 
-const getGoals = async () => {
-  const goal = goalModel.find();
+const getGoals = async (user) => {
+  const goal = goalModel.find(user);
   return goal;
 };
 
